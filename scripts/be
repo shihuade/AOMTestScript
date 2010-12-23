@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Copyright 2010 Google Inc.
+# All Rights Reserved.
+# Author: jimbankoski@google.com (Jim Bankoski)
+
+if [ $# -ne 2 ]
+then
+  echo "Encodes a file using best known settings (slow!)"
+  echo "  Usage:    be [FILE] [BITRATE]"
+  echo "  Example:  be akiyo_cif.y4m 200"
+  exit
+fi
+f=$1  # file is first parm
+b=$2  # bitrate is second parm
+
+if [ -e $f.fpf ]; then   # First-pass file found, do second pass only
+
+ vpxenc $f -o $f-$b.vp8.webm -p 2 --pass=2 --fpf=$f.fpf --best --cpu-used=0 --target-bitrate=$b  --auto-alt-ref=1 -v --minsection-pct=0 --maxsection-pct=800 --lag-in-frames=25 --kf-min-dist=0 --kf-max-dist=99999 --static-thresh=0 --min-q=0 --max-q=63 --drop-frame=0 --bias-pct=50 --minsection-pct=0 --maxsection-pct=800 --psnr --arnr-maxframes=7 --arnr-strength=3 --arnr-type=3
+
+else   # No first-pass file found, do 2-pass encode
+
+  vpxenc $f -o $f-$b.vp8.webm -p 2 --pass=1 --fpf=$f.fpf --best --cpu-used=0 --target-bitrate=$b  --auto-alt-ref=1 -v --minsection-pct=0 --maxsection-pct=800 --lag-in-frames=25 --kf-min-dist=0 --kf-max-dist=99999 --static-thresh=0 --min-q=0 --max-q=63 --drop-frame=0
+
+  vpxenc $f -o $f-$b.vp8.webm -p 2 --pass=2 --fpf=$f.fpf --best --cpu-used=0 --target-bitrate=$b  --auto-alt-ref=1 -v --minsection-pct=0 --maxsection-pct=800 --lag-in-frames=25 --kf-min-dist=0 --kf-max-dist=99999 --static-thresh=0 --min-q=0 --max-q=63 --drop-frame=0 --bias-pct=50 --minsection-pct=0 --maxsection-pct=800 --psnr --arnr-maxframes=7 --arnr-strength=3 --arnr-type=3
+
+fi

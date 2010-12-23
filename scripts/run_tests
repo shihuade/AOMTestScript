@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# Copyright 2010 Google Inc.
+# All Rights Reserved.
+# Author: jimbankoski@google.com (Jim Bankoski)
+
+if [ $# -ne 4 ]
+then
+  echo Encodes all the y4m files in the directory at the bitrates specified by
+  echo the first 3 parms and stores the results in a subdirectory named by the
+  echo 4th parameter:
+  echo
+  echo Usage:    run_tests start-kbps end-kbps step-kbps directory-to-store-results
+  echo Example:  run_tests 200 500 50 baseline
+  exit
+fi
+s=$1
+e=$2
+step=$3
+newdir=$4
+
+for i in ./*y4m
+do
+  for (( b=$s; b<= $e; b+= $step ))
+  do
+    be $i $b
+  done
+  mv opsnr.stt $i.stt
+done
+
+mkdir $newdir
+mv *.stt $newdir
+mv *.webm $newdir
