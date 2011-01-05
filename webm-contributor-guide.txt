@@ -108,8 +108,11 @@ $PATH:
 Download, Build and Test libvpx
 -------------------------------
 
-  1. To get started, **clone the libvpx repository**. After cloning, 
-     you'll be working in the master branch by default.
+  1. To get started, ensure that your system satisfies the **[build 
+     prerequisites](http://www.webmproject.org/code/build-prerequisites/)**.
+
+  2. Next, **clone the libvpx repository**. After cloning, you'll be 
+     working in the master branch by default.
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      $ git clone git://review.webmproject.org/libvpx.git
@@ -126,7 +129,7 @@ Download, Build and Test libvpx
      $ git checkout experimental
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  2. **Configure and build libvpx.** Be sure to run the configure 
+  3. **Configure and build libvpx.** Be sure to run the configure 
      script with `--enable-psnr`, which causes the encoder (`vpxenc`) 
      to output statistical data as well as a video file. For example:
 
@@ -141,11 +144,15 @@ Download, Build and Test libvpx
      $ ./configure --help
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      
-  3. **Run some encodes** using the provided scripts.  Example:
+     There are several ways to "install" (`make install`, etc.), so 
+     we'll leave that up to you.  Just ensure that the VP8 encoder 
+     (`vpxenc`) is executable and in your $PATH.
+     
+  4. **Run some encodes** using the provided scripts.  Example:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      $ cd <test clip directory>
-     $ ./run_tests 200 500 50 baseline
+     $ run_tests 200 500 50 baseline
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      
      In this example, `run_tests` will encode each `y4m` file in the 
@@ -159,24 +166,24 @@ Download, Build and Test libvpx
      for each input file, and will be reused on subsequent 2-pass 
      encodes if not deleted.
 
-  4. **Make your changes to libvpx**, rebuild, and re-run the tests 
+  5. **Make your changes to libvpx**, rebuild, and re-run the tests 
      using a different output directory name. Example:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     $ ./run_tests 200 500 50 mytweak
+     $ run_tests 200 500 50 mytweak
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
      Alternatively, change the parameters in the batch encoder script 
      (`be`) that's called by `run_tests`. `be` in turn calls `vpxenc`. 
      
-  5. When the tests are finished, run `visual_metrics.py` to generate 
+  6. When the tests are finished, run `visual_metrics.py` to generate 
      an **HTML-format report** that compares `mytweak` with `baseline`.
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     $ ./visual_metrics.py . baseline mytweak > mytweak.html
+     $ visual_metrics.py . baseline mytweak > mytweak.html
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  6. **View the report** by opening `mytweak.html` in a web browser.
+  7. **View the report** by opening `mytweak.html` in a web browser.
 
 
 Submit Your Patches

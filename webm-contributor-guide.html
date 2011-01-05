@@ -248,8 +248,12 @@ $PATH:</p>
 
 <ol>
   <li>
-    <p>To get started, <strong>clone the libvpx repository</strong>. After cloning, 
-you&rsquo;ll be working in the master branch by default.</p>
+    <p>To get started, ensure that your system satisfies the <strong><a href="http://www.webmproject.org/code/build-prerequisites/">build 
+prerequisites</a></strong>.</p>
+  </li>
+  <li>
+    <p>Next, <strong>clone the libvpx repository</strong>. After cloning, you&rsquo;ll be 
+working in the master branch by default.</p>
 
     <pre><code>$ git clone git://review.webmproject.org/libvpx.git
 $ cd libvpx
@@ -277,12 +281,16 @@ $ make
 
     <pre><code>$ ./configure --help
 </code></pre>
+
+    <p>There are several ways to &ldquo;install&rdquo; (<code>make install</code>, etc.), so 
+we&rsquo;ll leave that up to you.  Just ensure that the VP8 encoder 
+(<code>vpxenc</code>) is executable and in your $PATH.</p>
   </li>
   <li>
     <p><strong>Run some encodes</strong> using the provided scripts.  Example:</p>
 
     <pre><code>$ cd &lt;test clip directory&gt;
-$ ./run_tests 200 500 50 baseline
+$ run_tests 200 500 50 baseline
 </code></pre>
 
     <p>In this example, <code>run_tests</code> will encode each <code>y4m</code> file in the 
@@ -300,7 +308,7 @@ encodes if not deleted.</p>
     <p><strong>Make your changes to libvpx</strong>, rebuild, and re-run the tests 
 using a different output directory name. Example:</p>
 
-    <pre><code>$ ./run_tests 200 500 50 mytweak
+    <pre><code>$ run_tests 200 500 50 mytweak
 </code></pre>
 
     <p>Alternatively, change the parameters in the batch encoder script 
@@ -310,7 +318,7 @@ using a different output directory name. Example:</p>
     <p>When the tests are finished, run <code>visual_metrics.py</code> to generate 
 an <strong>HTML-format report</strong> that compares <code>mytweak</code> with <code>baseline</code>.</p>
 
-    <pre><code>$ ./visual_metrics.py . baseline mytweak &gt; mytweak.html
+    <pre><code>$ visual_metrics.py . baseline mytweak &gt; mytweak.html
 </code></pre>
   </li>
   <li>
