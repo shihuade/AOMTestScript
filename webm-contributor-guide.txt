@@ -2,9 +2,9 @@
 Contributing Source Code to libvpx
 ==================================
 
-_Revised 2010-12-22_
+_Revised 2011-01-05_
 
-This document will help guide you through contributing code to the WebM 
+This document will help guide you through contributing code to the WebM
 Project and libvpx.
 
 * * *
@@ -16,21 +16,21 @@ Project and libvpx.
 
 * * *
 
-In general, most of the on-going work on libvpx concerns speed and 
+In general, most of the on-going work on libvpx concerns speed and
 quality improvement. A developer typically follows this workflow:
 
   1. Work on the source code.
   2. Recompile the `vpxenc` encoder binary.
   3. Perform a video encode job with the new binary.
-  4. Evaluate the results, comparing to an identical encode done with a 
+  4. Evaluate the results, comparing to an identical encode done with a
      prior version of `vpxenc`.
 
-Once meaningful improvement is achieved, the developer submits his code 
+Once meaningful improvement is achieved, the developer submits his code
 revisions to `libvpx`.
 
-Below we describe in more detail how the core libvpx developers 
-evaluate their own work, so that new contributors can replicate the 
-process and have their code contributions approved and merged more 
+Below we describe in more detail how the core libvpx developers
+evaluate their own work, so that new contributors can replicate the
+process and have their code contributions approved and merged more
 easily.
 
 
@@ -45,25 +45,25 @@ Required Packages
 Become a Contributor
 --------------------
 
-All contributors are welcome. The WebM Project website has details on 
-configuring your machine and creating an account in our code review 
-system, so review the information at 
+All contributors are welcome. The WebM Project website has details on
+configuring your machine and creating an account in our code review
+system, so review the information at
 **<http://www.webmproject.org/code/>** to get started.
 
 
 Subscribe to codec-devel
 ------------------------
 
-**_codec-devel_** is the mailing list (and Google Group) for developers 
-working on the libvpx library or researching next generation codecs. 
-While anyone may post to codec-devel, subscribing gives you unmoderated 
+**_codec-devel_** is the mailing list (and Google Group) for developers
+working on the libvpx library or researching next generation codecs.
+While anyone may post to codec-devel, subscribing gives you unmoderated
 access.
 
   * Archive: <https://groups.google.com/a/webmproject.org/group/codec-devel>
   * Subscribe: <codec-devel+subscribe@webmproject.org>
   * Post: <codec-devel@webmproject.org>
 
-Though _codec-devel_ offers a web interface, many subscribers treat it 
+Though _codec-devel_ offers a web interface, many subscribers treat it
 as a simple mailing list and interact solely through their mail clients.
 
 
@@ -73,15 +73,15 @@ Download Test Clips
   1. Create a directory to hold the clips (e.g., `~/derf_cif` on Linux
      or `c:/derf_cif` on Windows).
   2. Visit <http://media.xiph.org/video/derf/> with your web browser.
-  3. Download each of the the CIF clips found there, in YUV4MPEG (y4m) 
+  3. Download each of the the CIF clips found there, in YUV4MPEG (y4m)
      format, to the directory you created.
 
 <div class="admon tip" markdown="1">
 Encoding Only a Few Test Clips
 
-Normally, you won't want to encode the entire set of test clips, which 
-can be very time-consuming. Instead, consider symlinking only the clips 
-you want to use from their storage directory (e.g. `~/derf_cif`) to a 
+Normally, you won't want to encode the entire set of test clips, which
+can be very time-consuming. Instead, consider symlinking only the clips
+you want to use from their storage directory (e.g. `~/derf_cif`) to a
 working directory (e.g. `~/derf_working`), and running your tests there.
 </div>
 
@@ -89,7 +89,7 @@ working directory (e.g. `~/derf_working`), and running your tests there.
 Download Test Scripts
 ---------------------
 
-Test scripts (and this document) are available in the 
+Test scripts (and this document) are available in the
 `contributor-guide` Git project:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -97,7 +97,7 @@ $ git clone git://review.webmproject.org/contributor-guide.git
 $ cd contributor-guide
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Symlink or physically copy the following scripts to somewhere in your 
+Symlink or physically copy the following scripts to somewhere in your
 $PATH:
 
   * `be`
@@ -108,10 +108,10 @@ $PATH:
 Download, Build and Test libvpx
 -------------------------------
 
-  1. To get started, ensure that your system satisfies the **[build 
+  1. To get started, ensure that your system satisfies the **[build
      prerequisites](http://www.webmproject.org/code/build-prerequisites/)**.
 
-  2. Next, **clone the libvpx repository**. After cloning, you'll be 
+  2. Next, **clone the libvpx repository**. After cloning, you'll be
      working in the master branch by default.
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -119,8 +119,8 @@ Download, Build and Test libvpx
      $ cd libvpx
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-     **Important:**  If your idea necessitates a change to the VP8 
-     format itself, you'll want to work in the libvpx experimental 
+     **Important:**  If your idea necessitates a change to the VP8
+     format itself, you'll want to work in the libvpx experimental
      branch instead:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,8 +129,8 @@ Download, Build and Test libvpx
      $ git checkout experimental
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  3. **Configure and build libvpx.** Be sure to run the configure 
-     script with `--enable-psnr`, which causes the encoder (`vpxenc`) 
+  3. **Configure and build libvpx.** Be sure to run the configure
+     script with `--enable-psnr`, which causes the encoder (`vpxenc`)
      to output statistical data as well as a video file. For example:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,44 +139,44 @@ Download, Build and Test libvpx
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
      To learn more about configuration options, do:
-     
+
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      $ ./configure --help
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     
-     There are several ways to "install" (`make install`, etc.), so 
-     we'll leave that up to you.  Just ensure that the VP8 encoder 
+
+     There are several ways to "install" (`make install`, etc.), so
+     we'll leave that up to you.  Just ensure that the VP8 encoder
      (`vpxenc`) is executable and in your $PATH.
-     
+
   4. **Run some encodes** using the provided scripts.  Example:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      $ cd <test clip directory>
      $ run_tests 200 500 50 baseline
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     
-     In this example, `run_tests` will encode each `y4m` file in the 
-     current directory at bitrates of 200, 250, 300, 350, 400, 450 and 
-     500 kbps (start at 200, end at 500, 50 kbps increments). It will 
+
+     In this example, `run_tests` will encode each `y4m` file in the
+     current directory at bitrates of 200, 250, 300, 350, 400, 450 and
+     500 kbps (start at 200, end at 500, 50 kbps increments). It will
      create a directory `baseline` and write its output there.
-     
-     Output consists of `webm` video files and `stt` files containing 
-     statistics for each encode. If the test encodes are 2-pass 
-     (default), an `fpf` file (first-pass data file) is also written 
-     for each input file, and will be reused on subsequent 2-pass 
+
+     Output consists of `webm` video files and `stt` files containing
+     statistics for each encode. If the test encodes are 2-pass
+     (default), an `fpf` file (first-pass data file) is also written
+     for each input file, and will be reused on subsequent 2-pass
      encodes if not deleted.
 
-  5. **Make your changes to libvpx**, rebuild, and re-run the tests 
+  5. **Make your changes to libvpx**, rebuild, and re-run the tests
      using a different output directory name. Example:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      $ run_tests 200 500 50 mytweak
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-     Alternatively, change the parameters in the batch encoder script 
-     (`be`) that's called by `run_tests`. `be` in turn calls `vpxenc`. 
-     
-  6. When the tests are finished, run `visual_metrics.py` to generate 
+     Alternatively, change the parameters in the batch encoder script
+     (`be`) that's called by `run_tests`. `be` in turn calls `vpxenc`.
+
+  6. When the tests are finished, run `visual_metrics.py` to generate
      an **HTML-format report** that compares `mytweak` with `baseline`.
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
