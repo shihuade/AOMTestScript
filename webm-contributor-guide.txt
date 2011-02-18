@@ -119,6 +119,7 @@ Download, Build and Test libvpx
      $ cd libvpx
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+     <div class="admon important" markdown="1">
      **Important:**  If your idea necessitates a change to the VP8
      format itself, you'll want to work in the libvpx experimental
      branch instead:
@@ -128,6 +129,7 @@ Download, Build and Test libvpx
      $ cd libvpx
      $ git checkout experimental
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     </div>
 
   3. **Configure and build libvpx.** Be sure to run the configure
      script with `--enable-psnr`, which causes the encoder (`vpxenc`)
@@ -190,3 +192,8 @@ Submit Your Patches
 -------------------
 
 See the detailed information at **<http://www.webmproject.org/code/contribute/submitting-patches/>**.
+
+<!-- 
+Icon artwork courtesy of the Tango Desktop Project, 
+http://tango.freedesktop.org/
+-->
