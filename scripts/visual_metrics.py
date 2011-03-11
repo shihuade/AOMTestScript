@@ -272,7 +272,7 @@ function query_file() {
   psnrdata = new google.visualization.DataTable(psnrjson, 0.6);//new google.visualization.DataTable((psnr)s, 0.6);
   if( psnrview != 0 ) delete psnrview;
   psnrview = new google.visualization.DataView(psnrdata);
-  chart.draw(psnrview, {curveType:'function',title:imagestr,pointSize:2,lineWidth:1,width:840,height:640  });
+  chart.draw(psnrview, {title:imagestr,pointSize:2,lineWidth:1,width:840,height:640  });
   google.visualization.events.addListener(chart, 'select', chartSelect);
 }
 function chartSelect(){
@@ -283,7 +283,7 @@ function chartSelect(){
   min = min / 3
   max = max * 3
   psnrview.setRows(psnrdata.getFilteredRows([{column: 0,minValue: min, maxValue:max}]));
-  chart.draw(psnrview, {curveType:'function',title:imagestr,pointSize:2,lineWidth:1,width:840,height:640  });
+  chart.draw(psnrview, {title:imagestr,pointSize:2,lineWidth:1,width:840,height:640  });
 }
 function selectBetterHandler() {
   var selection = bettertable.getSelection();
