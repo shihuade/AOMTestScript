@@ -93,7 +93,7 @@ Test scripts (and this document) are available in the
 `contributor-guide` Git project:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$ git clone git://review.webmproject.org/contributor-guide.git
+$ git clone http://git.chromium.org/webm/contributor-guide.git
 $ cd contributor-guide
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -115,7 +115,7 @@ Download, Build and Test libvpx
      working in the master branch by default.
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     $ git clone git://review.webmproject.org/libvpx.git
+     $ git clone http://git.chromium.org/webm/libvpx.git
      $ cd libvpx
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -125,7 +125,7 @@ Download, Build and Test libvpx
      branch instead:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     $ git clone git://review.webmproject.org/libvpx.git
+     $ git clone http://git.chromium.org/webm/libvpx.git
      $ cd libvpx
      $ git checkout experimental
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
