@@ -38,7 +38,7 @@ Required Packages
 -----------------
 
   * A Bash shell
-  * Python 2.4
+  * Python
   * A modern web browser (like Google Chrome)
 
 
@@ -127,7 +127,7 @@ Download, Build and Test libvpx
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      $ git clone http://git.chromium.org/webm/libvpx.git
      $ cd libvpx
-     $ git checkout experimental
+     $ git checkout -b experimental origin/experimental
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      </div>
 
@@ -183,7 +183,7 @@ Download, Build and Test libvpx
      an **HTML-format report** that compares `mytweak` with `baseline`.
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     $ visual_metrics.py . baseline mytweak > mytweak.html
+     $ visual_metrics.py "*stt" baseline mytweak > mytweak.html
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   7. **View the report** by opening `mytweak.html` in a web browser.
