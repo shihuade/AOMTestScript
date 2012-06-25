@@ -6,7 +6,7 @@ The file `webm-contributor-guide.txt` is the Contributor's Guide source
 document.  It can be easily transformed to HTML5 using kramdown [1] and
 the included template file, `template.html`.
 
-kramdown is a well-maintained text-to-HTML transformer, in Ruby, 
+kramdown is a well-maintained text-to-HTML transformer, in Ruby,
 typically installed via rubygems [2]:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,7 +23,7 @@ $ gem install kramdown
 To build the HTML5 output:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$ kramdown webm-contributor-guide.txt --template template.html > webm-contributor-guide.html 
+$ kramdown webm-contributor-guide.txt --template template.html > webm-contributor-guide.html
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
