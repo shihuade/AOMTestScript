@@ -132,11 +132,12 @@ Download, Build and Test libvpx
      </div>
 
   3. **Configure and build libvpx.** Be sure to run the configure
-     script with `--enable-psnr`, which causes the encoder (`vpxenc`)
-     to output statistical data as well as a video file. For example:
+     script with `--enable-internal-stats`, which causes the encoder
+     (`vpxenc`) to output statistical data as well as a video file. For
+     example:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     $ ./configure --disable-codecs --enable-vp8 --enable-psnr --enable-debug --disable-install-docs --log=yes
+     $ ./configure --disable-codecs --enable-vp8 --enable-internal-stats --enable-debug --disable-install-docs --log=yes
      $ make
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -193,7 +194,7 @@ Submit Your Patches
 
 See the detailed information at **<http://www.webmproject.org/code/contribute/submitting-patches/>**.
 
-<!-- 
-Icon artwork courtesy of the Tango Desktop Project, 
+<!--
+Icon artwork courtesy of the Tango Desktop Project,
 http://tango.freedesktop.org/
 -->
