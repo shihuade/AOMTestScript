@@ -120,9 +120,9 @@ Download, Build and Test libvpx
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
      <div class="admon important" markdown="1">
-     **Important:**  If your idea necessitates a change to the VP8
-     format itself, you'll want to work in the libvpx experimental
-     branch instead:
+     **Important:**  Although its not the common case, if your idea
+     would necessitate a change to the VP8 format itself, you'll want
+     to work in the libvpx experimental branch instead:
 
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      $ git clone http://git.chromium.org/webm/libvpx.git
