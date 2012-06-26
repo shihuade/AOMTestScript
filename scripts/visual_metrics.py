@@ -405,21 +405,29 @@ function pointDifference(row, col){
       }
     }
 
-    metric_slope = ( rate_smallest_thats_greater - rate_greatest_thats_less) /
-        ( metric_smallest_thats_greater - metric_greatest_thats_less);
-
-    projected_rate = ( sel_metric - metric_greatest_thats_less) * metric_slope +
-        rate_greatest_thats_less;
-
-    difference = 100 * (projected_rate / sel_bitrate - 1);
-
-
-    if (difference > 0)
-      message = message + "<li>  " + difference.toFixed(2) + "% smaller than " +
-                metricdata.getColumnLabel(i) + "</li> "
+    if(rate_smallest_thats_greater == 0 || rate_greatest_thats_less == 0) {
+      message = message + " <li> Couldn't find a point on both sides.</li>"
+    }
     else
-      message = message + "<li>  " + -difference.toFixed(2) + "% bigger than " +
-                metricdata.getColumnLabel(i) + "</li> "
+    {
+      metric_slope = ( rate_smallest_thats_greater - rate_greatest_thats_less) /
+          ( metric_smallest_thats_greater - metric_greatest_thats_less);
+
+      projected_rate = ( sel_metric - metric_greatest_thats_less) *
+          metric_slope + rate_greatest_thats_less;
+
+      difference = 100 * (projected_rate / sel_bitrate - 1);
+
+
+      if (difference > 0)
+        message = message + "<li>  " + difference.toFixed(2) +
+                  "% smaller than " +
+                  metricdata.getColumnLabel(i) + "</li> "
+      else
+        message = message + "<li>  " + -difference.toFixed(2) +
+                  "% bigger than " +
+                  metricdata.getColumnLabel(i) + "</li> "
+    }
 
   }
   message = message + "</ul>"
