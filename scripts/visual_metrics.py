@@ -114,58 +114,85 @@ def HandleFiles(variables):
 <meta charset="utf-8">
 <title>VP8 Results</title>
 <style type="text/css">
+<!-- Begin 960 reset -->
+a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,dialog,div,dl,dt,em,embed,fieldset,figcaption,figure,font,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,hr,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,meter,nav,object,ol,output,p,pre,progress,q,rp,rt,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video,xmp{border:0;margin:0;padding:0;font-size:100%}html,body{height:100%}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}b,strong{font-weight:bold}img{color:transparent;font-size:0;vertical-align:middle;-ms-interpolation-mode:bicubic}ol,ul{list-style:none}li{display:list-item}table{border-collapse:collapse;border-spacing:0}th,td,caption{font-weight:normal;vertical-align:top;text-align:left}q{quotes:none}q:before,q:after{content:'';content:none}sub,sup,small{font-size:75%}sub,sup{line-height:0;position:relative;vertical-align:baseline}sub{bottom:-0.25em}sup{top:-0.5em}svg{overflow:hidden}
+<!-- End 960 reset -->
+<!-- Begin 960 text -->
+body{font:13px/1.5 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif}pre,code{font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace}hr{border:0 #ccc solid;border-top-width:1px;clear:both;height:0}h1{font-size:25px}h2{font-size:23px}h3{font-size:21px}h4{font-size:19px}h5{font-size:17px}h6{font-size:15px}ol{list-style:decimal}ul{list-style:disc}li{margin-left:30px}p,dl,hr,h1,h2,h3,h4,h5,h6,ol,ul,pre,table,address,fieldset,figure{margin-bottom:20px}
+<!-- End 960 text -->
+<!-- Begin 960 grid (tweaked to 1200 px width) -->
+body{min-width:1200px}.container_12{margin-left:auto;margin-right:auto;width:1200px}.grid_1,.grid_2,.grid_3,.grid_4,.grid_5,.grid_6,.grid_7,.grid_8,.grid_9,.grid_10,.grid_11,.grid_12{display:inline;float:left;position:relative;margin-left:10px;margin-right:10px}.push_1,.pull_1,.push_2,.pull_2,.push_3,.pull_3,.push_4,.pull_4,.push_5,.pull_5,.push_6,.pull_6,.push_7,.pull_7,.push_8,.pull_8,.push_9,.pull_9,.push_10,.pull_10,.push_11,.pull_11,.push_12,.pull_12{position:relative}.alpha{margin-left:0}.omega{margin-right:0}.container_12 .grid_1{width:80px}.container_12 .grid_2{width:180px}.container_12 .grid_3{width:280px}.container_12 .grid_4{width:380px}.container_12 .grid_5{width:480px}.container_12 .grid_6{width:580px}.container_12 .grid_7{width:680px}.container_12 .grid_8{width:780px}.container_12 .grid_9{width:880px}.container_12 .grid_10{width:980px}.container_12 .grid_11{width:1080px}.container_12 .grid_12{width:1180px}.container_12 .prefix_1{padding-left:100px}.container_12 .prefix_2{padding-left:200px}.container_12 .prefix_3{padding-left:300px}.container_12 .prefix_4{padding-left:400px}.container_12 .prefix_5{padding-left:500px}.container_12 .prefix_6{padding-left:600px}.container_12 .prefix_7{padding-left:700px}.container_12 .prefix_8{padding-left:800px}.container_12 .prefix_9{padding-left:900px}.container_12 .prefix_10{padding-left:1000px}.container_12 .prefix_11{padding-left:1100px}.container_12 .suffix_1{padding-right:100px}.container_12 .suffix_2{padding-right:200px}.container_12 .suffix_3{padding-right:300px}.container_12 .suffix_4{padding-right:400px}.container_12 .suffix_5{padding-right:500px}.container_12 .suffix_6{padding-right:600px}.container_12 .suffix_7{padding-right:700px}.container_12 .suffix_8{padding-right:800px}.container_12 .suffix_9{padding-right:900px}.container_12 .suffix_10{padding-right:1000px}.container_12 .suffix_11{padding-right:1100px}.container_12 .push_1{left:100px}.container_12 .push_2{left:200px}.container_12 .push_3{left:300px}.container_12 .push_4{left:400px}.container_12 .push_5{left:500px}.container_12 .push_6{left:600px}.container_12 .push_7{left:700px}.container_12 .push_8{left:800px}.container_12 .push_9{left:900px}.container_12 .push_10{left:1000px}.container_12 .push_11{left:1100px}.container_12 .pull_1{left:-100px}.container_12 .pull_2{left:-200px}.container_12 .pull_3{left:-300px}.container_12 .pull_4{left:-400px}.container_12 .pull_5{left:-500px}.container_12 .pull_6{left:-600px}.container_12 .pull_7{left:-700px}.container_12 .pull_8{left:-800px}.container_12 .pull_9{left:-900px}.container_12 .pull_10{left:-1000px}.container_12 .pull_11{left:-1100px}.clear{clear:both;display:block;overflow:hidden;visibility:hidden;width:0;height:0}.clearfix:before,.clearfix:after{content:'\0020';display:block;overflow:hidden;visibility:hidden;width:0;height:0}.clearfix:after{clear:both}.clearfix{zoom:1}
+<!-- End 960 grid -->
+
 body {
-  font-family: verdana;
 }
-.bold-font {
-  font-weight: bold;
-  font-size: 14px;
+div.header {
+  font-family: Arial, sans-serif;
 }
-
-.small-font {
-  font-size: 14px;
+div.header h2 {
+  margin: .5em auto;
 }
-
+div.radio {
+  font-family: Arial, sans-serif;
+  margin-bottom: 1em;
+}
+div.main {
+}
+div.cliplist {
+  font-family: Arial, sans-serif;
+}
+div.chartarea {
+  font-family: Arial, sans-serif;
+}
+div.indicators {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  min-height: 600px;
+  background-color: #f7f7f7;
+}
+div.indicators div.content {
+  margin: 1em;
+}
+div.indicators div.content h5 {
+  font-size: 13px;
+  text-align: center;
+  margin: 0;
+}
+div.indicators div.content ul {
+  margin-left: 0;
+  padding-left: 0;
+  margin-top: 0;
+}
+div.indicators div.content ul li {
+  margin-left: 1.5em;
+}
+div.indicators div.content p:first-child {
+  margin-bottom: .5em;
+}
+span.google-visualization-table-sortind {
+  color: #000;
+}
 .header-style {
-  border: 2px solid white;
-  background-color: #cccccc;
+  font-weight: bold;
+  border: 1px solid #fff;
+  background-color: #ccc;
 }
-
+td.header-style + td {
+}
 .orange-background {
   background-color: orange;
 }
-
-.small-margin {
-  margin: 0;
-  padding: 0;
-}
-
 .light-gray-background {
   background-color: #f0f0f0;
 }
 
-.invisible {
-  font-size: 1px;
-  background-color: white;
-  color: white;
-  height: 0px;
-}
-
-#indented {
-  position: absolute;
-  left: 150px;
-}
-
-#midcol {
-  margin: 0 0px;
-}
 </style>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript"
   src="http://danvk.org/dygraphs/dygraph-combined.js"></script>
 <script type="text/javascript">
 var chart_height=600;
-var chart_width=500;
+var chart_width=570;
 var filestable =[];
 var snrs =[];
 """
@@ -371,8 +398,8 @@ function pointDifference(row, col){
   var sel_bitrate = metricview.getValue(row, 0 );
   var sel_metric = metricview.getValue(row, col);
 
-  var message = "At " + sel_metric.toFixed(2) + " decibels, "
-  message = message + metricdata.getColumnLabel(col) + " is <ul>"
+  var message = "At " + sel_metric.toFixed(2) + " decibels, <em>"
+  message = message + metricdata.getColumnLabel(col) + "</em> is <ul>"
 
   // col 0 is datarate
   for( var i=1;i<cols;++i){
@@ -421,20 +448,20 @@ function pointDifference(row, col){
 
       if (difference > 0)
         message = message + "<li>  " + difference.toFixed(2) +
-                  "% smaller than " +
-                  metricdata.getColumnLabel(i) + "</li> "
+                  "% smaller than <em>" +
+                  metricdata.getColumnLabel(i) + "</em></li> "
       else
         message = message + "<li>  " + -difference.toFixed(2) +
-                  "% bigger than " +
-                  metricdata.getColumnLabel(i) + "</li> "
+                  "% bigger than <em>" +
+                  metricdata.getColumnLabel(i) + "</em></li> "
     }
 
   }
   message = message + "</ul>"
   statusbar = document.getElementById('status');
   statusbar.innerHTML = "<p>" + message + "</p>";
-  statusbar.style.top = "50%";
-  statusbar.style.left = "50%";
+  //statusbar.style.top = "50%";
+  //statusbar.style.left = "50%";
   statusbar.style.display = 'block';
 }
 
@@ -473,21 +500,47 @@ google.setOnLoadCallback(setup_vis);
 
 <body>
 
-  <form name="myform"> Average size reduction to get the same quality
-    <input type="radio" checked name="column" value="1"
-        onClick="changeColumn('1')" />Average PSNR
-    <input type="radio" name="column" value="2"
-        onClick="changeColumn('2')" />Global PSNR
-    <input type="radio" name="column" value="5"
-        onClick="changeColumn('5')" />SSIM
-  </form>
+  <div class="container_12">
 
-  <div id="bettertable" style="float: left"></div>
-  <div id="metricgraph" style="float: left"></div>
+    <div class="grid_12 header">
+      <h2>VP8 Results</h2>
+    </div>
 
-  <div id="status"
-    style='width: 300px; background-color: white; position: absolute;
-    top:'50%'; left:'50%'; z-index: 1; display: none;'>
+    <div class="grid_12 radio">
+
+      <form name="myform">Average size reduction to get the same quality
+        <input type="radio" checked name="column" value="1"
+            onClick="changeColumn('1')" />Average PSNR
+        <input type="radio" name="column" value="2"
+            onClick="changeColumn('2')" />Global PSNR
+        <input type="radio" name="column" value="5"
+            onClick="changeColumn('5')" />SSIM
+      </form>
+
+    </div>
+
+    <div class="grid_12 main">
+
+      <div class="grid_2 alpha cliplist">
+        <div id="bettertable"></div>
+      </div>
+
+      <div class="grid_6 chartarea">
+        <div id="metricgraph"></div>
+      </div>
+
+      <div class="grid_3 omega indicators">
+        <div class="content">
+          <h5>Indicators</h5>
+          <hr>
+          <div id="status"></div>
+        </div>
+      </div>
+
+      <!-- One unused columns here -->
+
+    </div>
+
   </div>
 
 </body>
