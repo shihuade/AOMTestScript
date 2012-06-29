@@ -34,7 +34,10 @@ def FileBetter(file_name_1, file_name_2, metric_column):
   for line in metric_file:
     metrics = string.split(line)
     if HasMetrics(line):
-      tuple = float(metrics[0]), float(metrics[metric_column])
+      if metric_column < len(metrics):
+        tuple = float(metrics[0]), float(metrics[metric_column])
+      else:
+        tuple = float(metrics[0]), 0
       metric_set1.add(tuple)
   metric_set1_sorted = sorted(metric_set1)
 
@@ -42,8 +45,11 @@ def FileBetter(file_name_1, file_name_2, metric_column):
   metric_file = open(file_name_2, "r")
   for line in metric_file:
     metrics = string.split(line)
-    if line[0:1] != "B":
-      tuple = float(metrics[0]), float(metrics[metric_column])
+    if HasMetrics(line):
+      if metric_column < len(metrics):
+        tuple = float(metrics[0]), float(metrics[metric_column])
+      else:
+        tuple = float(metrics[0]), 0
       metric_set2.add(tuple)
   metric_set2_sorted = sorted(metric_set2)
 
@@ -227,11 +233,12 @@ var snrs =[];
 
     print "rows : ["
 
+    countoverall = {}
     sumoverall = {}
     for directory in dirs:
+      countoverall[directory] = 0
       sumoverall[directory] = 0
 
-    countoverall = 0
     for filename in dir_list:
       print "{c:[",
       print "{f:'" + splitext(basename(filename))[0] + "'},",
@@ -239,7 +246,12 @@ var snrs =[];
 
       for directory in dirs:
         metric_file_name = directory + "/" + filename
-        if os.path.isfile(metric_file_name):
+        if not os.path.isfile(metric_file_name):
+          if directory == dirs[len(dirs) - 1]:
+            print "]",
+          else:
+            print ",",
+        else:
           overall = FileBetter(baseline_file_name, metric_file_name, column)
           print "{v:" + str(100 * overall) + "}",
           if directory == dirs[len(dirs) - 1]:
@@ -248,14 +260,14 @@ var snrs =[];
             print ",",
 
           sumoverall[directory] += overall
-      countoverall += 1
+          countoverall[directory] += 1
       print "}, "
 
     print "{c:[",
     print "{f:'OVERALL'},",
 
     for directory in dirs:
-      print "{v:" + str(100 * sumoverall[directory] / countoverall) + "}",
+      print "{v:" + str(100 * sumoverall[directory] / countoverall[directory]) + "}",
       if directory == dirs[len(dirs) - 1]:
         print "]",
       else:
@@ -288,13 +300,21 @@ var snrs =[];
 
       for directory in dirs:
         metric_file_name = directory + "/" + filename
+        if not os.path.isfile(metric_file_name):
+          prec += ","
+          postc = postc[1:]
+          continue
+
         metric_file = open(metric_file_name, "r")
         for line in metric_file:
           metrics = string.split(line)
           if HasMetrics(line):
             print "{c:[{v:" + metrics[0] + "},",
             print prec,
-            print "{v:" + metrics[column] + "}",
+            if column < len(metrics) :
+              print "{v:" + metrics[column] + "}",
+            else:
+              print "{v:0}",
             print postc + "]},",
         prec += ","
         postc = postc[1:]
@@ -307,8 +327,12 @@ var snrs =[];
         line = metric_file_lines[i]
         metrics = string.split(line)
         if HasMetrics(line):
-          print ("{c:[{v:" + metrics[0] + "},{v:" + metrics[column] + "}" +
-                 postc + "]}"),
+          if column < len(metrics):
+            print ("{c:[{v:" + metrics[0] + "},{v:" + metrics[column] + "}" +
+                   postc + "]}"),
+          else:
+            print ("{c:[{v:" + metrics[0] + "},{v:0}" +
+                   postc + "]}"),
           if i < len(metric_file_lines) - 1:
             print ",",
 
