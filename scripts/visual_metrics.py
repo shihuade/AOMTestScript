@@ -402,8 +402,8 @@ function query_file() {
   metricview = new google.visualization.DataView(metricdata);
 
   chart.draw(metricview, {curveType:'function',
-      chartArea:{left:chart_left, top:chart_top, width:chart_width, height:chart_height},
-      hAxis:{title:"datarate in kbps"}, vAxis:{title:"quality in decibels"},
+      chartArea:{left:chart_left, top:chart_top, width:chart_width, height:chart_height - 110},
+      hAxis:{title:"Datarate in kbps"}, vAxis:{title:"Quality in decibels"},
       legend:{position:"in"}, title:imagestr, pointSize:2, lineWidth:1,
       width:chart_width, height:chart_height - 50});
 
@@ -512,7 +512,7 @@ function chartSelect(){
 
   chart.draw(metricview, {curveType:'function',
       chartArea:{left:40, top:10, width:chart_width, height:chart_height - 110},
-      hAxis:{title:"datarate in kbps"}, vAxis:{title:"quality in decibels"},
+      hAxis:{title:"Datarate in kbps"}, vAxis:{title:"Quality in decibels"},
       legend:{position:"in"}, title:imagestr, pointSize:2, lineWidth:1,
       width:chart_width, height:chart_height - 50});
 }
@@ -553,7 +553,7 @@ google.setOnLoadCallback(setup_vis);
 
     <div class="grid_12 main">
 
-      <div class="grid_2 alpha cliplist">
+      <div class="grid_3 alpha cliplist">
         <div id="bettertable"></div>
       </div>
 
@@ -561,7 +561,7 @@ google.setOnLoadCallback(setup_vis);
         <div id="metricgraph"></div>
       </div>
 
-      <div class="grid_3 omega indicators">
+      <div class="grid_2 omega indicators">
         <div class="content">
           <h5>Indicators</h5>
           <hr>
