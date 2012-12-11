@@ -287,7 +287,7 @@ function pointDifference(row, col) {
         continue;
 
       if(this_metric > metric_greatest_thats_less &&
-         this_metric < sel_metric) {
+         this_metric <= sel_metric) {
         metric_greatest_thats_less = this_metric;
         rate_greatest_thats_less = this_rate;
       }
