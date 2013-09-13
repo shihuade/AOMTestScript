@@ -287,7 +287,7 @@ def HandleFiles(variables):
   filestable['avg'] = ''
 
   # Go through each metric in the list.
-  for column in range(1, 5):
+  for column in range(1, 6):
 
     # Dirs is directories after the baseline to compare to the base.
     dirs = variables[4:len(variables)]
