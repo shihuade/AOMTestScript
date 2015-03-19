@@ -194,16 +194,7 @@ function setup_vis() {
 }
 
 function draw_files() {
-  var cssClassNames = {
-      'headerRow': 'blue-font small-font bold-font small-margin',
-      'tableRow': 'small-font small-margin',
-      'oddTableRow': 'light-gray-background small-font small-margin',
-      'selectedTableRow': 'orange-background small-font',
-      'hoverTableRow': 'small-font header-style',
-      'headerCell': 'header-style small-margin',
-      'tableCell': 'small-margin'};
-
-  var options = {'allowHtml': true,'cssClassNames': cssClassNames};
+  var options = {'allowHtml': true, 'width': "100%", 'height': "50%"};
   if (better != 0) delete better;
 
   col=eval(ftable+'[column]')
