@@ -16,6 +16,7 @@ import re
 import string
 import sys
 import math
+import warnings
 
 import gviz_api
 
@@ -39,28 +40,39 @@ def bdsnr(metric_set1, metric_set2):
   psnr1 = [x[1] for x in metric_set1]
   rate2 = [x[0] for x in metric_set2]
   psnr2 = [x[1] for x in metric_set2]
+  if not psnr1 or not psnr2:
+    return 0.0
+
+  psnr1 = [100.0 if x == float('inf') else x for x in psnr1]
+  psnr2 = [100.0 if x == float('inf') else x for x in psnr2]
+
 
   log_rate1 = map(lambda x: math.log(x), rate1)
   log_rate2 = map(lambda x: math.log(x), rate2)
 
-  # Best cubic poly fit for graph represented by log_ratex, psrn_x.
-  p1 = numpy.polyfit(log_rate1, psnr1, 3)
-  p2 = numpy.polyfit(log_rate2, psnr2, 3)
+  try:
+    # Best cubic poly fit for graph represented by log_ratex, psrn_x.
+    p1 = numpy.polyfit(log_rate1, psnr1, 3)
+    p2 = numpy.polyfit(log_rate2, psnr2, 3)
 
-  # Integration interval.
-  min_int = max([min(log_rate1),min(log_rate2)])
-  max_int = min([max(log_rate1),max(log_rate2)])
+    # Integration interval.
+    min_int = max([min(log_rate1),min(log_rate2)])
+    max_int = min([max(log_rate1),max(log_rate2)])
 
-  # Integrate p1, and p2.
-  p_int1 = numpy.polyint(p1)
-  p_int2 = numpy.polyint(p2)
+    # Integrate p1, and p2.
+    p_int1 = numpy.polyint(p1)
+    p_int2 = numpy.polyint(p2)
 
-  # Calculate the integrated value over the interval we care about.
-  int1 = numpy.polyval(p_int1, max_int) - numpy.polyval(p_int1, min_int)
-  int2 = numpy.polyval(p_int2, max_int) - numpy.polyval(p_int2, min_int)
+    # Calculate the integrated value over the interval we care about.
+    int1 = numpy.polyval(p_int1, max_int) - numpy.polyval(p_int1, min_int)
+    int2 = numpy.polyval(p_int2, max_int) - numpy.polyval(p_int2, min_int)
 
-  # Calculate the average improvement.
-  avg_diff = (int2 - int1) / (max_int - min_int)
+    # Calculate the average improvement.
+    avg_diff = (int2 - int1) / (max_int - min_int)
+
+  except (TypeError, ZeroDivisionError, ValueError, numpy.RankWarning) as e:
+    return 0
+
   return avg_diff
 
 def bdrate(metric_set1, metric_set2):
@@ -80,27 +92,38 @@ def bdrate(metric_set1, metric_set2):
   rate2 = [x[0] for x in metric_set2]
   psnr2 = [x[1] for x in metric_set2]
 
+  if not psnr1 or not psnr2:
+    return 0.0
+
+  psnr1 = [100.0 if x == float('inf') else x for x in psnr1]
+  psnr2 = [100.0 if x == float('inf') else x for x in psnr2]
+
   log_rate1 = map(lambda x: math.log(x), rate1)
   log_rate2 = map(lambda x: math.log(x), rate2)
 
-  # Best cubic poly fit for graph represented by log_ratex, psrn_x.
-  p1 = numpy.polyfit(psnr1, log_rate1, 3)
-  p2 = numpy.polyfit(psnr2, log_rate2, 3)
+  try:
+    # Best cubic poly fit for graph represented by log_ratex, psrn_x.
+    p1 = numpy.polyfit(psnr1, log_rate1, 3)
+    p2 = numpy.polyfit(psnr2, log_rate2, 3)
 
-  # Integration interval.
-  min_int = max([min(psnr1),min(psnr2)])
-  max_int = min([max(psnr1),max(psnr2)])
+    # Integration interval.
+    min_int = max([min(psnr1),min(psnr2)])
+    max_int = min([max(psnr1),max(psnr2)])
 
-  # find integral
-  p_int1 = numpy.polyint(p1)
-  p_int2 = numpy.polyint(p2)
+    # find integral
+    p_int1 = numpy.polyint(p1)
+    p_int2 = numpy.polyint(p2)
 
-  # Calculate the integrated value over the interval we care about.
-  int1 = numpy.polyval(p_int1, max_int) - numpy.polyval(p_int1, min_int)
-  int2 = numpy.polyval(p_int2, max_int) - numpy.polyval(p_int2, min_int)
+    # Calculate the integrated value over the interval we care about.
+    int1 = numpy.polyval(p_int1, max_int) - numpy.polyval(p_int1, min_int)
+    int2 = numpy.polyval(p_int2, max_int) - numpy.polyval(p_int2, min_int)
 
-  # Calculate the average improvement.
-  avg_exp_diff = (int2 - int1) / (max_int - min_int)
+    # Calculate the average improvement.
+    avg_exp_diff = (int2 - int1) / (max_int - min_int)
+
+  except (TypeError, ZeroDivisionError, ValueError, numpy.RankWarning) as e:
+    return 0
+
 
   # In really bad formed data the exponent can grow too large.
   # clamp it.
@@ -129,10 +152,18 @@ def HasMetrics(line):
   """
   The metrics files produced by vpxenc are started with a B for headers.
   """
-  if line[0:1] != "B":
+  # If the first char of the first word on the line is a digit
+  if len(line) == 0:
+    return False
+  if len(line.split()) == 0:
+    return False
+  if line.split()[0][0:1].isdigit():
     return True
   return False
 
+def GetMetrics(file_name):
+  metric_file = open(file_name, "r")
+  return metric_file.readline().split();
 
 def ParseMetricFile(file_name, metric_column):
   metric_set1 = set([])
@@ -282,18 +313,22 @@ def HandleFiles(variables):
   baseline_dir = variables[3]
   snrs = ''
   filestable = {}
+
   filestable['dsnr'] = ''
   filestable['drate'] = ''
   filestable['avg'] = ''
 
-  # Go through each metric in the list.
-  for column in range(1, 6):
+  # Dirs is directories after the baseline to compare to the base.
+  dirs = variables[4:len(variables)]
 
-    # Dirs is directories after the baseline to compare to the base.
-    dirs = variables[4:len(variables)]
+  # Find the metric files in the baseline directory.
+  dir_list = sorted(fnmatch.filter(os.listdir(baseline_dir), file_pattern))
 
-    # Find the metric files in the baseline directory.
-    dir_list = sorted(fnmatch.filter(os.listdir(baseline_dir), file_pattern))
+  metrics = GetMetrics(baseline_dir + "/" + dir_list[0])
+
+  metrics_js = 'metrics = ["' + '", "'.join(metrics) + '"];'
+
+  for column in range(1, len(metrics)):
 
     for metric in ['avg','dsnr','drate']:
       description = {"file": ("string", "File")}
@@ -342,8 +377,8 @@ def HandleFiles(variables):
       data_table.LoadData(data)
 
       filestable[metric] = ( filestable[metric] + "filestable_" + metric +
-                             "[" + str(column) + "]=" + data_table.ToJSon()
-                             + "\n" )
+                             "[" + str(column) + "]=" +
+                             data_table.ToJSon(columns_order=["file"]+dirs) + "\n" )
 
     filestable_avg = filestable['avg']
     filestable_dpsnr = filestable['dsnr']

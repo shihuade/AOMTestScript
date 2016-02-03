@@ -126,7 +126,6 @@ div.indicators div.content p:first-child {
 span.google-visualization-table-sortind {
   color: #000;
 }
-
 .header-style {
   font-weight: bold;
   border: 1px solid #fff;
@@ -145,7 +144,7 @@ td.header-style+td {
   background-color: #f0f0f0;
 }
 </style>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
 var chart_left   = 40;
 var chart_top    = 6;
@@ -158,6 +157,7 @@ var filestable_drate = [];
 var filestable_avg = [];
 
 // Python template code replaces the following 2 lines.
+//%%metrics_js%%//
 //%%filestable_dpsnr%%//
 //%%filestable_avg%%//
 //%%filestable_drate%%//
@@ -169,12 +169,13 @@ var bettertable=0;
 var chart=0;
 var better=0;
 var metricdata=0;
-var metricview=0;
+var metricView=0;
 var column=1;
 var formatter=0;
 
 function changeColumn(col) {
   column = col;
+  console.log(col)
   draw_files();
 }
 
@@ -191,6 +192,20 @@ function setup_vis() {
       document.getElementById("bettertable"));
 
   draw_files();
+  build_metrics_radio();
+}
+
+function build_metrics_radio() {
+  for (metric=1; metric < metrics.length; metric++) {
+    var rb = document.createElement('input');
+    var l = document.createElement('label');
+    rb.setAttribute('type','radio');
+    rb.setAttribute('name','metric');
+    rb.setAttribute('onClick', "changeColumn('"+metric.toString()+"')");
+    l.innerHTML = metrics[metric];
+    document.getElementById('metrics').appendChild(rb);
+    document.getElementById('metrics').appendChild(l);
+  }
 }
 
 function draw_files() {
@@ -221,10 +236,11 @@ function query_file() {
   imagestr = better.getFormattedValue(selected, 0)
   var metricjson = eval('(' + snrs[column][selected] + ')');
   metricdata = new google.visualization.DataTable(metricjson, 0.6);
-  if( metricview != 0 ) delete metricview;
-  metricview = new google.visualization.DataView(metricdata);
+  if( metricView != 0 ) delete metricView;
+  metricView = new google.visualization.DataView(metricdata);
 
-  chart.draw(metricview, {curveType:'function',
+  chart.draw(metricView, {curveType:'function',
+      explorer: {},
       chartArea:{left:chart_left, top:chart_top, width:chart_width,
       height:chart_height-90},
       hAxis:{title:"Datarate in kbps"}, vAxis:{title:"Quality in decibels"},
@@ -252,11 +268,12 @@ function pointDifference(row, col) {
   var cols = metricdata.getNumberOfColumns();
   var rows = metricdata.getNumberOfRows();
 
-  var sel_bitrate = metricview.getValue(row, 0 );
-  var sel_metric = metricview.getValue(row, col);
+  var sel_bitrate = metricView.getValue(row, 0 );
+  var sel_metric = metricView.getValue(row, col);
 
-  var message = "At " + sel_metric.toFixed(2) + " decibels, <em>"
-  message = message + metricdata.getColumnLabel(col) + "</em> is <ul>"
+  var message = '<ul>' + metricView.getColumnLabel(col) +
+     ' (' + sel_bitrate.toFixed(0) + ' kbps, ' + sel_metric.toFixed(2) + ')' + ' is ';
+
 
   // col 0 is datarate
   for( var i=1;i<cols;++i) {
@@ -321,17 +338,17 @@ function pointDifference(row, col) {
 function chartSelect() {
   var selection = chart.getSelection();
   var message = '';
-  var min = metricview.getFormattedValue(selection[0].row, 0);
-  var max = metricview.getFormattedValue(selection[selection.length-1].row, 0);
-  var val = metricview.getFormattedValue(selection[0].row,selection[0].column);
+  var min = metricView.getFormattedValue(selection[0].row, 0);
+  var max = metricView.getFormattedValue(selection[selection.length-1].row, 0);
+  var val = metricView.getFormattedValue(selection[0].row,selection[0].column);
 
   pointDifference(selection[0].row, selection[0].column)
   min = min / 3
   max = max * 3
-  metricview.setRows(metricdata.getFilteredRows(
+  metricView.setRows(metricdata.getFilteredRows(
       [{column: 0,minValue: min, maxValue:max}]));
 
-  chart.draw(metricview, {curveType:'function',
+  chart.draw(metricView, {curveType:'function',
       chartArea:{left:40, top:10, width:chart_width, height:chart_height - 110},
       hAxis:{title:"datarate in kbps"}, vAxis:{title:"quality in decibels"},
       legend:{position:"in"}, title:imagestr, pointSize:2, lineWidth:1,
@@ -346,6 +363,7 @@ function selectBetterHandler() {
   selected = item.row
   query_file()
 }
+
 
 google.load('visualization', '1', {'packages' : ['corechart','table']});
 google.setOnLoadCallback(setup_vis);
@@ -372,12 +390,7 @@ google.setOnLoadCallback(setup_vis);
           onClick="changeMetric('filestable_drate')" />BDRATE
       </form>
 
-      <form name="myform">
-        Average size reduction to get the same quality <input type="radio"
-          checked name="column" value="1" onClick="changeColumn('1')" />Average
-        PSNR <input type="radio" name="column" value="2"
-          onClick="changeColumn('2')" />Global PSNR <input type="radio"
-          name="column" value="3" onClick="changeColumn('5')" />SSIM
+      <form id="metrics" name="myform">
       </form>
 
     </div>
