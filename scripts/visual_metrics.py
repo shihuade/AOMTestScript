@@ -23,6 +23,9 @@ import gviz_api
 from os.path import basename
 from os.path import splitext
 
+warnings.simplefilter('ignore', numpy.RankWarning)
+warnings.simplefilter('ignore', RuntimeWarning)
+
 def bdsnr(metric_set1, metric_set2):
   """
   BJONTEGAARD    Bjontegaard metric calculation
@@ -46,11 +49,10 @@ def bdsnr(metric_set1, metric_set2):
   psnr1 = [100.0 if x == float('inf') else x for x in psnr1]
   psnr2 = [100.0 if x == float('inf') else x for x in psnr2]
 
-
-  log_rate1 = map(lambda x: math.log(x), rate1)
-  log_rate2 = map(lambda x: math.log(x), rate2)
-
   try:
+    log_rate1 = map(lambda x: math.log(x), rate1)
+    log_rate2 = map(lambda x: math.log(x), rate2)
+
     # Best cubic poly fit for graph represented by log_ratex, psrn_x.
     p1 = numpy.polyfit(log_rate1, psnr1, 3)
     p2 = numpy.polyfit(log_rate2, psnr2, 3)
@@ -98,10 +100,10 @@ def bdrate(metric_set1, metric_set2):
   psnr1 = [100.0 if x == float('inf') else x for x in psnr1]
   psnr2 = [100.0 if x == float('inf') else x for x in psnr2]
 
-  log_rate1 = map(lambda x: math.log(x), rate1)
-  log_rate2 = map(lambda x: math.log(x), rate2)
-
   try:
+    log_rate1 = map(lambda x: math.log(x), rate1)
+    log_rate2 = map(lambda x: math.log(x), rate2)
+
     # Best cubic poly fit for graph represented by log_ratex, psrn_x.
     p1 = numpy.polyfit(psnr1, log_rate1, 3)
     p2 = numpy.polyfit(psnr2, log_rate2, 3)
