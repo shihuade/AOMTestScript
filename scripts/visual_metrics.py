@@ -10,7 +10,9 @@ __author__ = "jzern@google.com (James Zern),"
 __author__ += "jimbankoski@google.com (Jim Bankoski)"
 
 import fnmatch
-import numpy
+import numpy as np
+import scipy as sp
+import scipy.interpolate
 import os
 import re
 import string
@@ -23,7 +25,7 @@ import gviz_api
 from os.path import basename
 from os.path import splitext
 
-warnings.simplefilter('ignore', numpy.RankWarning)
+warnings.simplefilter('ignore', np.RankWarning)
 warnings.simplefilter('ignore', RuntimeWarning)
 
 def bdsnr(metric_set1, metric_set2):
@@ -54,88 +56,92 @@ def bdsnr(metric_set1, metric_set2):
     log_rate2 = map(lambda x: math.log(x), rate2)
 
     # Best cubic poly fit for graph represented by log_ratex, psrn_x.
-    p1 = numpy.polyfit(log_rate1, psnr1, 3)
-    p2 = numpy.polyfit(log_rate2, psnr2, 3)
+    p1 = np.polyfit(log_rate1, psnr1, 3)
+    p2 = np.polyfit(log_rate2, psnr2, 3)
 
     # Integration interval.
     min_int = max([min(log_rate1),min(log_rate2)])
     max_int = min([max(log_rate1),max(log_rate2)])
 
     # Integrate p1, and p2.
-    p_int1 = numpy.polyint(p1)
-    p_int2 = numpy.polyint(p2)
+    p_int1 = np.polyint(p1)
+    p_int2 = np.polyint(p2)
 
     # Calculate the integrated value over the interval we care about.
-    int1 = numpy.polyval(p_int1, max_int) - numpy.polyval(p_int1, min_int)
-    int2 = numpy.polyval(p_int2, max_int) - numpy.polyval(p_int2, min_int)
+    int1 = np.polyval(p_int1, max_int) - np.polyval(p_int1, min_int)
+    int2 = np.polyval(p_int2, max_int) - np.polyval(p_int2, min_int)
 
     # Calculate the average improvement.
     avg_diff = (int2 - int1) / (max_int - min_int)
 
-  except (TypeError, ZeroDivisionError, ValueError, numpy.RankWarning) as e:
+  except (TypeError, ZeroDivisionError, ValueError, np.RankWarning) as e:
     return 0
 
   return avg_diff
 
-def bdrate(metric_set1, metric_set2):
+def bdrate2(metric_set1, metric_set2):
   """
-  BJONTEGAARD    Bjontegaard metric calculation
+  BJONTEGAARD    Bjontegaard metric calculation adapted
   Bjontegaard's metric allows to compute the average % saving in bitrate
-  between two rate-distortion curves [1].
+  between two rate-distortion curves [1].  This is an adaptation of that
+  method that fixes inconsistencies when the curve fit operation goes awry
+  by replacing the curve fit function with a Piecewise Cubic Hermite
+  Interpolating Polynomial and then integrating that by evaluating that
+  function at small intervals using the trapezoid method to calculate
+  the integral.
 
-  rate1,psnr1 - RD points for curve 1
-  rate2,psnr2 - RD points for curve 2
-
-  adapted from code from: (c) 2010 Giuseppe Valenzise
-
+  metric_set1 - list of tuples ( bitrate,  metric ) for first graph
+  metric_set2 - list of tuples ( bitrate,  metric ) for second graph
   """
-  rate1 = [x[0] for x in metric_set1]
-  psnr1 = [x[1] for x in metric_set1]
-  rate2 = [x[0] for x in metric_set2]
-  psnr2 = [x[1] for x in metric_set2]
 
-  if not psnr1 or not psnr2:
+  if not metric_set1 or not metric_set2:
     return 0.0
 
-  psnr1 = [100.0 if x == float('inf') else x for x in psnr1]
-  psnr2 = [100.0 if x == float('inf') else x for x in psnr2]
-
   try:
-    log_rate1 = map(lambda x: math.log(x), rate1)
-    log_rate2 = map(lambda x: math.log(x), rate2)
 
-    # Best cubic poly fit for graph represented by log_ratex, psrn_x.
-    p1 = numpy.polyfit(psnr1, log_rate1, 3)
-    p2 = numpy.polyfit(psnr2, log_rate2, 3)
+    # pchip_interlopate requires keys sorted by x axis. x-axis will
+    # be our metric not the bitrate so sort by metric.
+    metric_set1.sort(key=lambda tup: tup[1])
+    metric_set2.sort(key=lambda tup: tup[1])
 
-    # Integration interval.
-    min_int = max([min(psnr1),min(psnr2)])
-    max_int = min([max(psnr1),max(psnr2)])
+    # Pull the log of the rate and clamped psnr from metric_sets.
+    log_rate1 = [math.log(x[0]) for x in metric_set1]
+    metric1 = [100.0 if x[1] == float('inf') else x[1] for x in metric_set1]
+    log_rate2 = [math.log(x[0]) for x in metric_set2]
+    metric2 = [100.0 if x[1] == float('inf') else x[1] for x in metric_set2]
 
-    # find integral
-    p_int1 = numpy.polyint(p1)
-    p_int2 = numpy.polyint(p2)
+    # Integration interval.  This metric only works on the area that's
+    # overlapping.   Extrapolation of these things is sketchy so we avoid.
+    min_int = max([min(metric1), min(metric2)])
+    max_int = min([max(metric1), max(metric2)])
 
-    # Calculate the integrated value over the interval we care about.
-    int1 = numpy.polyval(p_int1, max_int) - numpy.polyval(p_int1, min_int)
-    int2 = numpy.polyval(p_int2, max_int) - numpy.polyval(p_int2, min_int)
+    # No overlap means no sensible metric possible.
+    if max_int <= min_int:
+      return 0.0
+
+    # Use Piecewise Cubic Hermite Interpolating Polynomial interpolation to
+    # create 100 new samples points separated by interval.
+    lin = np.linspace(min_int, max_int,num=100, retstep=True)
+    interval = lin[1]
+    samples = lin[0]
+    v1 = scipy.interpolate.pchip_interpolate(metric1, log_rate1, samples)
+    v2 = scipy.interpolate.pchip_interpolate(metric2, log_rate2, samples)
+
+    # Calculate the integral using the trapezoid method on the samples.
+    int_v1 = np.trapz(v1, dx=interval)
+    int_v2 = np.trapz(v2, dx=interval)
 
     # Calculate the average improvement.
-    avg_exp_diff = (int2 - int1) / (max_int - min_int)
+    avg_exp_diff = (int_v2 - int_v1) / (max_int - min_int)
 
-  except (TypeError, ZeroDivisionError, ValueError, numpy.RankWarning) as e:
+  except (TypeError, ZeroDivisionError, ValueError, np.RankWarning) as e:
     return 0
-
-
-  # In really bad formed data the exponent can grow too large.
-  # clamp it.
-  if avg_exp_diff > 200 :
-    avg_exp_diff = 200
 
   # Convert to a percentage.
   avg_diff = (math.exp(avg_exp_diff) - 1) * 100
 
   return avg_diff
+
 
 
 def FillForm(string_for_substitution, dictionary_of_vars):
@@ -174,7 +180,10 @@ def ParseMetricFile(file_name, metric_column):
     metrics = string.split(line)
     if HasMetrics(line):
       if metric_column < len(metrics):
-        tuple = float(metrics[0]), float(metrics[metric_column])
+        try:
+          tuple = float(metrics[0]), float(metrics[metric_column])
+        except:
+          tuple = float(metrics[0]), 0
       else:
         tuple = float(metrics[0]), 0
       metric_set1.add(tuple)
@@ -204,6 +213,8 @@ def FileBetter(file_name_1, file_name_2, metric_column, method):
     total_bitrate_difference_ratio = 0.0
     count = 0
     for bitrate, metric in metric_set1_sorted:
+      if bitrate == 0:
+        continue
       for i in range(len(metric_set2_sorted) - 1):
         s2_bitrate_0, s2_metric_0 = metric_set2_sorted[i]
         s2_bitrate_1, s2_metric_1 = metric_set2_sorted[i + 1]
@@ -220,6 +231,8 @@ def FileBetter(file_name_1, file_name_2, metric_column, method):
           estimated_s2_bitrate = (s2_bitrate_0 + (metric - s2_metric_0) *
                                   metric_slope)
 
+          if estimated_s2_bitrate == 0:
+            continue
           # Calculate percentage difference as given by base.
           if base_is_set_2 == 0:
             bitrate_difference_ratio = ((bitrate - estimated_s2_bitrate) /
@@ -249,7 +262,7 @@ def FileBetter(file_name_1, file_name_2, metric_column, method):
   elif method == 'dsnr':
       avg_improvement = bdsnr(metric_set1_sorted, metric_set2_sorted)
   else:
-      avg_improvement = bdrate(metric_set2_sorted, metric_set1_sorted)
+      avg_improvement = bdrate2(metric_set2_sorted, metric_set1_sorted)
 
   return avg_improvement
 
