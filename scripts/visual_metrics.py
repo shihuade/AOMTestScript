@@ -28,56 +28,65 @@ from os.path import splitext
 warnings.simplefilter('ignore', np.RankWarning)
 warnings.simplefilter('ignore', RuntimeWarning)
 
-def bdsnr(metric_set1, metric_set2):
+def bdsnr2(metric_set1, metric_set2):
   """
-  BJONTEGAARD    Bjontegaard metric calculation
-  Bjontegaard's metric allows to compute the average gain in psnr between two
-  rate-distortion curves [1].
-  rate1,psnr1 - RD points for curve 1
-  rate2,psnr2 - RD points for curve 2
+  BJONTEGAARD    Bjontegaard metric calculation adapted
+  Bjontegaard's snr metric allows to compute the average % saving in decibels
+  between two rate-distortion curves [1].  This is an adaptation of that
+  method that fixes inconsistencies when the curve fit operation goes awry
+  by replacing the curve fit function with a Piecewise Cubic Hermite
+  Interpolating Polynomial and then integrating that by evaluating that
+  function at small intervals using the trapezoid method to calculate
+  the integral.
 
-  returns the calculated Bjontegaard metric 'dsnr'
-
-  code adapted from code written by : (c) 2010 Giuseppe Valenzise
-  http://www.mathworks.com/matlabcentral/fileexchange/27798-bjontegaard-metric/content/bjontegaard.m
+  metric_set1 - list of tuples ( bitrate,  metric ) for first graph
+  metric_set2 - list of tuples ( bitrate,  metric ) for second graph
   """
-  rate1 = [x[0] for x in metric_set1]
-  psnr1 = [x[1] for x in metric_set1]
-  rate2 = [x[0] for x in metric_set2]
-  psnr2 = [x[1] for x in metric_set2]
-  if not psnr1 or not psnr2:
+
+  if not metric_set1 or not metric_set2:
     return 0.0
 
-  psnr1 = [100.0 if x == float('inf') else x for x in psnr1]
-  psnr2 = [100.0 if x == float('inf') else x for x in psnr2]
-
   try:
-    log_rate1 = map(lambda x: math.log(x), rate1)
-    log_rate2 = map(lambda x: math.log(x), rate2)
 
-    # Best cubic poly fit for graph represented by log_ratex, psrn_x.
-    p1 = np.polyfit(log_rate1, psnr1, 3)
-    p2 = np.polyfit(log_rate2, psnr2, 3)
+    # pchip_interlopate requires keys sorted by x axis. x-axis will
+    # be our metric not the bitrate so sort by metric.
+    metric_set1.sort()
+    metric_set2.sort()
 
-    # Integration interval.
-    min_int = max([min(log_rate1),min(log_rate2)])
-    max_int = min([max(log_rate1),max(log_rate2)])
+    # Pull the log of the rate and clamped psnr from metric_sets.
+    log_rate1 = [math.log(x[0]) for x in metric_set1]
+    metric1 = [100.0 if x[1] == float('inf') else x[1] for x in metric_set1]
+    log_rate2 = [math.log(x[0]) for x in metric_set2]
+    metric2 = [100.0 if x[1] == float('inf') else x[1] for x in metric_set2]
 
-    # Integrate p1, and p2.
-    p_int1 = np.polyint(p1)
-    p_int2 = np.polyint(p2)
+    # Integration interval.  This metric only works on the area that's
+    # overlapping.   Extrapolation of these things is sketchy so we avoid.
+    min_int = max([min(log_rate1), min(log_rate2)])
+    max_int = min([max(log_rate1), max(log_rate2)])
 
-    # Calculate the integrated value over the interval we care about.
-    int1 = np.polyval(p_int1, max_int) - np.polyval(p_int1, min_int)
-    int2 = np.polyval(p_int2, max_int) - np.polyval(p_int2, min_int)
+    # No overlap means no sensible metric possible.
+    if max_int <= min_int:
+      return 0.0
+
+    # Use Piecewise Cubic Hermite Interpolating Polynomial interpolation to
+    # create 100 new samples points separated by interval.
+    lin = np.linspace(min_int, max_int, num=100, retstep=True)
+    interval = lin[1]
+    samples = lin[0]
+    v1 = scipy.interpolate.pchip_interpolate(log_rate1, metric1, samples)
+    v2 = scipy.interpolate.pchip_interpolate(log_rate2, metric2, samples)
+
+    # Calculate the integral using the trapezoid method on the samples.
+    int_v1 = np.trapz(v1, dx=interval)
+    int_v2 = np.trapz(v2, dx=interval)
 
     # Calculate the average improvement.
-    avg_diff = (int2 - int1) / (max_int - min_int)
+    avg_exp_diff = (int_v2 - int_v1) / (max_int - min_int)
 
   except (TypeError, ZeroDivisionError, ValueError, np.RankWarning) as e:
     return 0
 
-  return avg_diff
+  return avg_exp_diff
 
 def bdrate2(metric_set1, metric_set2):
   """
@@ -121,7 +130,7 @@ def bdrate2(metric_set1, metric_set2):
 
     # Use Piecewise Cubic Hermite Interpolating Polynomial interpolation to
     # create 100 new samples points separated by interval.
-    lin = np.linspace(min_int, max_int,num=100, retstep=True)
+    lin = np.linspace(min_int, max_int, num=100, retstep=True)
     interval = lin[1]
     samples = lin[0]
     v1 = scipy.interpolate.pchip_interpolate(metric1, log_rate1, samples)
@@ -260,7 +269,7 @@ def FileBetter(file_name_1, file_name_2, metric_column, method):
                        GraphBetter(metric_set1_sorted, metric_set2_sorted, 1) -
                        GraphBetter(metric_set2_sorted, metric_set1_sorted, 0))
   elif method == 'dsnr':
-      avg_improvement = bdsnr(metric_set1_sorted, metric_set2_sorted)
+      avg_improvement = bdsnr2(metric_set1_sorted, metric_set2_sorted)
   else:
       avg_improvement = bdrate2(metric_set2_sorted, metric_set1_sorted)
 
